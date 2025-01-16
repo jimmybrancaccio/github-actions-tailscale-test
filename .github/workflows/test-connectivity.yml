@@ -21,13 +21,32 @@ jobs:
         run: resolvectl status
       - name: Check connectivity
         run: |
-          i=0
-          while [ $i -lt 10 ]; do
-            nslookup ts-ubuntu-broken >/dev/null 2>&1
-            if [ $? -eq 0 ]; then
-              echo "DNS lookup successful."
-              exit 0 # Exit the script immediately after a successful lookup
-            fi
-            ((i++))
-            sleep 5
+          # Number of attempts
+          max_attempts=10
+          attempts=0
+
+          # Function to perform nslookup
+          perform_nslookup() {
+              nslookup "$1"  # Replace "$1" with the desired domain or IP
+          }
+
+          # Main loop
+          while (( attempts < max_attempts )); do
+              perform_nslookup "ts-ubuntu-broken"  # You can replace "example.com" with your desired target
+              exit_status=$?  # Capture exit status
+
+              if [[ $exit_status -eq 0 ]]; then
+                  echo "nslookup succeeded."
+                  exit 0  # Exit the script if successful
+              elif [[ $exit_status -eq 1 ]]; then
+                  echo "nslookup failed. Retrying in 5 seconds..."
+                  sleep 5  # Wait before retrying
+                  ((attempts++))  # Increment the attempt counter
+              else
+                  echo "nslookup failed with exit status $exit_status."
+                  exit $exit_status  # Exit with the actual status for other errors
+              fi
           done
+
+          echo "Maximum attempts reached. Exiting."
+          exit 1
