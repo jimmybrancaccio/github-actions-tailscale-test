@@ -27,5 +27,6 @@ jobs:
             else
               echo "DNS resolution failed, checking again in 5 seconds..."
               sleep 5
+              break
             fi
           done
