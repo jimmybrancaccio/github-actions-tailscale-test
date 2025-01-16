@@ -25,11 +25,14 @@ jobs:
         run: |
           i=0
           while [ $i -lt 10 ]; do
+            echo $i
             nslookup ts-ubuntu-broken || {
+              echo $?
               echo "DNS resolution failed, checking again in 5 seconds..."
               sleep 5
             }
             if [ $? -eq 0 ]; then
+              echo $?
               exit 0 # Exit the script immediately after a successful lookup
             fi
             ((i++))
