@@ -11,22 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Symlink resolv.conf
-        run: |
-          ls -la /etc/resolv.conf
-          sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
-          ls -la /etc/resolv.conf
       - name: Connect to tailnet
         uses: tailscale/github-action@v3
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
+      - name: Check systemd-resolved status
+        run: resolvectl status
       - name: Check connectivity
         run: |
           i=0
           while [ $i -lt 10 ]; do
-            nslookup ts-ubuntu-broken
+            nslookup ts-ubuntu-broken 2>/dev/null
             if [ $? -eq 0 ]; then
               echo "DNS lookup successful."
               exit 0 # Exit the script immediately after a successful lookup
