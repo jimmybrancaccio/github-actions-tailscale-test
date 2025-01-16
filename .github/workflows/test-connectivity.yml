@@ -1,0 +1,31 @@
+name: GitHub Runner Connectivity Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  acls:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Connect to tailnet
+        uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+      - name: Check connectivity
+        run: |
+          for i in {1..10}; do
+            nslookup ts-ubuntu-desktop
+            if [ $? -eq 0 ]; then
+              echo "Success"
+              break
+            else
+              echo "DNS resolution failed, checking again in 5 seconds..."
+              sleep 5
+            fi
+          done
