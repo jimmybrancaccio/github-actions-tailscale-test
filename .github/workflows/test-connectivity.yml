@@ -19,14 +19,13 @@ jobs:
           tags: tag:ci
       - name: Check connectivity
         run: |
-          for i in {1..10}; do
-            nslookup ts-ubuntu-broken
-            if [ $? -eq 0 ]; then
-              echo "Success"
-              break
-            else
+          for attempt in {1..10}; do
+            dig +short ts-ubuntu-broken 2>/dev/null || {
               echo "DNS resolution failed, checking again in 5 seconds..."
               sleep 5
-              break
-            fi
+            }
           done
+
+          if [ $? -eq 0 ]; then
+            echo "Success"
+          fi
