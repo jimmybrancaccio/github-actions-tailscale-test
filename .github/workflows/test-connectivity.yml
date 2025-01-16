@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Symlink resolv.conf
         run: |
-          ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+          sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
           ls -la /etc/resolv.conf
       - name: Connect to tailnet
         uses: tailscale/github-action@v3
