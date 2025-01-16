@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Symlink resolv.conf
+        run: |
+          ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+          ls -la /etc/resolv.conf
       - name: Connect to tailnet
         uses: tailscale/github-action@v3
         with:
@@ -19,13 +23,14 @@ jobs:
           tags: tag:ci
       - name: Check connectivity
         run: |
-          for attempt in {1..10}; do
-            nslookup ts-duplicati || {
+          i=0
+          while [ $i -lt 10 ]; do
+            nslookup ts-ubuntu-broken || {
               echo "DNS resolution failed, checking again in 5 seconds..."
               sleep 5
             }
+            if [ $? -eq 0 ]; then
+              exit 0 # Exit the script immediately after a successful lookup
+            fi
+            ((i++))
           done
-
-          if [ $? -eq 0 ]; then
-            echo "Success"
-          fi
