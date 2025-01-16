@@ -20,7 +20,7 @@ jobs:
       - name: Check connectivity
         run: |
           for attempt in {1..10}; do
-            nslookup ts-ubuntu-broken || {
+            nslookup ts-duplicati || {
               echo "DNS resolution failed, checking again in 5 seconds..."
               sleep 5
             }
