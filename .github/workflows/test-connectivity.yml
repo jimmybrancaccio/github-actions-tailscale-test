@@ -13,6 +13,7 @@ jobs:
     steps:
       - name: Symlink resolv.conf
         run: |
+          ls -la /etc/resolv.conf
           sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
           ls -la /etc/resolv.conf
       - name: Connect to tailnet
@@ -33,6 +34,6 @@ jobs:
               echo "DNS lookup failed. Retrying..."
               ((i++))
               sleep 5
+              break
             fi
-
           done
