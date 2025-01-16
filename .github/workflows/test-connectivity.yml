@@ -30,10 +30,7 @@ jobs:
             if [ $? -eq 0 ]; then
               echo "DNS lookup successful."
               exit 0 # Exit the script immediately after a successful lookup
-            else
-              echo "DNS lookup failed. Retrying..."
-              ((i++))
-              sleep 5
-              break
             fi
+            ((i++))
+            sleep 5
           done
