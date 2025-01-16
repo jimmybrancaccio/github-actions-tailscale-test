@@ -23,7 +23,7 @@ jobs:
         run: |
           i=0
           while [ $i -lt 10 ]; do
-            nslookup ts-ubuntu-broken 2&1>/dev/null
+            nslookup ts-ubuntu-broken >/dev/null 2>&1
             if [ $? -eq 0 ]; then
               echo "DNS lookup successful."
               exit 0 # Exit the script immediately after a successful lookup
